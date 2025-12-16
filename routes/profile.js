@@ -21,24 +21,24 @@ const profile = require('./api/profile');
 //   }
 // ];
 
-module.exports = function() {
+module.exports = function () {
 
-  // i make default route to get random profile
-  router.get('/', async function(req, res, next) {
+  router.get('/', async function (req, res, next) {
     try {
-    const profiles = await Profile.find().limit(1).lean();
-    if (!profiles || profiles.length === 0) {
-      return res.status(404).send('No profiles found');
-    }
+      const id = req.query.profileid;
+      const profile = id 
+        ? await Profile.findById(id)
+        : (await Profile.find().limit(1).lean())[0];
+      
+      if (!profile) {
+        return res.status(404).send('No profiles found');
+      }
 
-    res.render('profile_template', {
-      profile: profiles[0],
-    });
+      res.render('profile_template', { profile });
     } catch (error) {
       next(error);
     }
-  });
 
+  });
   return router;
 }
-
