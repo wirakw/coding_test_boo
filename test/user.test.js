@@ -117,6 +117,24 @@ describe('User API Tests', () => {
       expect(response.body.success).toBe(false);
       expect(response.body.message).toBe('User not found');
     });
+
+    it('should return 400 when user ID is null', async () => {
+      const response = await request(app)
+        .get('/api/user/null')
+        .expect(400);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.message).toBe('User ID is required');
+    });
+
+    it('should return 400 when user ID is undefined', async () => {
+      const response = await request(app)
+        .get('/api/user/undefined')
+        .expect(400);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.message).toBe('User ID is required');
+    });
   });
 
   describe('PUT /api/user/:id', () => {
@@ -141,6 +159,46 @@ describe('User API Tests', () => {
       expect(response.body.data.image).toBe(updates.image);
     });
 
+    it('should update only name without image', async () => {
+      const user = await User.create({
+        name: 'user test',
+        image: 'https://example.com/original.jpg'
+      });
+
+      const updates = {
+        name: 'user test updated'
+      };
+
+      const response = await request(app)
+        .put(`/api/user/${user._id}`)
+        .send(updates)
+        .expect(200);
+
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.name).toBe(updates.name);
+      expect(response.body.data.image).toBe('https://example.com/original.jpg');
+    });
+
+    it('should update only image without name', async () => {
+      const user = await User.create({
+        name: 'user test',
+        image: 'https://example.com/original.jpg'
+      });
+
+      const updates = {
+        image: 'https://example.com/new-image.jpg'
+      };
+
+      const response = await request(app)
+        .put(`/api/user/${user._id}`)
+        .send(updates)
+        .expect(200);
+
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.name).toBe('user test');
+      expect(response.body.data.image).toBe('https://example.com/new-image.jpg');
+    });
+
     it('should return 404 when updating non-existent user', async () => {
       const fakeId = '507f1f77bcf86cd799439011'; //fake id like mongo id
 
@@ -151,6 +209,26 @@ describe('User API Tests', () => {
 
       expect(response.body.success).toBe(false);
       expect(response.body.message).toBe('User not found');
+    });
+
+    it('should return 400 when updating with null ID', async () => {
+      const response = await request(app)
+        .put('/api/user/null')
+        .send({ name: 'user test' })
+        .expect(400);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.message).toBe('User ID is required');
+    });
+
+    it('should return 400 when updating with undefined ID', async () => {
+      const response = await request(app)
+        .put('/api/user/undefined')
+        .send({ name: 'user test' })
+        .expect(400);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.message).toBe('User ID is required');
     });
   });
 
@@ -181,6 +259,24 @@ describe('User API Tests', () => {
 
       expect(response.body.success).toBe(false);
       expect(response.body.message).toBe('User not found');
+    });
+
+    it('should return 400 when deleting with null ID', async () => {
+      const response = await request(app)
+        .delete('/api/user/null')
+        .expect(400);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.message).toBe('User ID is required');
+    });
+
+    it('should return 400 when deleting with undefined ID', async () => {
+      const response = await request(app)
+        .delete('/api/user/undefined')
+        .expect(400);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.message).toBe('User ID is required');
     });
   });
 });

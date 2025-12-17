@@ -35,6 +35,11 @@ const getAllProfiles = async (req, res, next) => {
 
 const getProfileById = async (req, res, next) => {
   const { id } = req.params;
+  
+  if (!id || id === 'null' || id === 'undefined') {
+    return errorResponse(res, 400, 'Profile ID is required');
+  }
+
   const profile = await Profile.findById(id);
 
   if (!profile) {
@@ -48,6 +53,10 @@ const getProfileById = async (req, res, next) => {
 const updateProfileById = async (req, res, next) => {
   const { id } = req.params;
   const { name, description, mbti, enneagram, variant, tritype, socionics, sloan, psyche, image } = req.body;
+
+  if (!id || id === 'null' || id === 'undefined') {
+    return errorResponse(res, 400, 'Profile ID is required');
+  }
 
   const existingProfile = await Profile.findById(id);
 
@@ -79,6 +88,11 @@ const updateProfileById = async (req, res, next) => {
 // Delete a profile
 const deleteProfileById = async (req, res, next) => {
   const { id } = req.params;
+  
+  if (!id || id === 'null' || id === 'undefined') {
+    return errorResponse(res, 400, 'Profile ID is required');
+  }
+
   const existingProfile = await Profile.findById(id);
 
   if (!existingProfile) {

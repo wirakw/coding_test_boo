@@ -217,6 +217,24 @@ describe('Profile API Tests', () => {
       expect(response.body.message).toBe('Profile not found');
     });
 
+    it('should return 400 when profile ID is null', async () => {
+      const response = await request(app)
+        .get('/api/profile/null')
+        .expect(400);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.message).toBe('Profile ID is required');
+    });
+
+    it('should return 400 when profile ID is undefined', async () => {
+      const response = await request(app)
+        .get('/api/profile/undefined')
+        .expect(400);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.message).toBe('Profile ID is required');
+    });
+
     it('should return profile with complete personality data', async () => {
       const profile = await Profile.create({
         name: 'Complete Profile',
@@ -338,6 +356,26 @@ describe('Profile API Tests', () => {
       expect(response.body.message).toBe('Profile not found');
     });
 
+    it('should return 400 when updating with null ID', async () => {
+      const response = await request(app)
+        .put('/api/profile/null')
+        .send({ name: 'New Name' })
+        .expect(400);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.message).toBe('Profile ID is required');
+    });
+
+    it('should return 400 when updating with undefined ID', async () => {
+      const response = await request(app)
+        .put('/api/profile/undefined')
+        .send({ name: 'New Name' })
+        .expect(400);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.message).toBe('Profile ID is required');
+    });
+
     it('should handle empty update gracefully', async () => {
       const profile = await Profile.create({
         name: 'Test Profile',
@@ -385,6 +423,24 @@ describe('Profile API Tests', () => {
 
       expect(response.body.success).toBe(false);
       expect(response.body.message).toBe('Profile not found');
+    });
+
+    it('should return 400 when deleting with null ID', async () => {
+      const response = await request(app)
+        .delete('/api/profile/null')
+        .expect(400);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.message).toBe('Profile ID is required');
+    });
+
+    it('should return 400 when deleting with undefined ID', async () => {
+      const response = await request(app)
+        .delete('/api/profile/undefined')
+        .expect(400);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.message).toBe('Profile ID is required');
     });
 
     it('should successfully delete profile with complete data', async () => {

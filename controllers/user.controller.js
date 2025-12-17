@@ -27,6 +27,11 @@ const getAllUsers = async (req, res, next) => {
 
 const getUserById = async (req, res, next) => {
   const { id } = req.params;
+  
+  if (!id || id === 'null' || id === 'undefined') {
+    return errorResponse(res, 400, 'User ID is required');
+  }
+
   const user = await User.findById(id);
 
   if (!user) {
@@ -40,6 +45,10 @@ const getUserById = async (req, res, next) => {
 const updateUserById = async (req, res, next) => {
   const { id } = req.params;
   const { name, image } = req.body;
+
+  if (!id || id === 'null' || id === 'undefined') {
+    return errorResponse(res, 400, 'User ID is required');
+  }
 
   const existingUser = await User.findById(id);
 
@@ -63,6 +72,11 @@ const updateUserById = async (req, res, next) => {
 // Delete a user
 const deleteUserById = async (req, res, next) => {
   const { id } = req.params;
+  
+  if (!id || id === 'null' || id === 'undefined') {
+    return errorResponse(res, 400, 'User ID is required');
+  }
+
   const existingUser = await User.findById(id);
 
   if (!existingUser) {
