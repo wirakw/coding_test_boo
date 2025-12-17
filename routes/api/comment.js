@@ -4,7 +4,7 @@ const express = require('express');
 const {
   createComment,
   getAllComments,
-  likeComment
+  likeUnlikeComment
 } = require('../../controllers/comment.controller');
 
 module.exports = function() {
@@ -13,7 +13,7 @@ module.exports = function() {
   router.post('/', createComment);
   router.get('/', getAllComments);
   
-  router.post('/like', likeComment);
+  router.post('/like', likeUnlikeComment);
 
   return router;
 };

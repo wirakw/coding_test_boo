@@ -47,7 +47,7 @@ const createComment = async (req, res) => {
 
 const getAllComments = async (req, res) => {
   try {
-    const {personality = "all", orderBy = "createdAt"} = req.query;
+    const { personality = "all", orderBy = "createdAt" } = req.query;
 
     let filter = {};
     if (personality === "mbti") {
@@ -75,24 +75,36 @@ const getAllComments = async (req, res) => {
 };
 
 //this part for like a comment by another user
-const likeComment = async (req, res) => {
+const likeUnlikeComment = async (req, res) => {
   try {
     const { commentId, userId } = req.body;
     if (!commentId || !userId) {
       return errorResponse(res, 400, 'commentId and userId are required');
     }
-    
+
     const existingComment = await Comment.findById(commentId);
     if (!existingComment) {
       return errorResponse(res, 404, 'Comment not found');
     }
 
-    const result = await Comment.findByIdAndUpdate(commentId,
-      { $addToSet: { likes: userId } },
-      { new: true }
-    );
-
-    return successResponse(res, 200, result);
+    let result;
+    const alreadyLiked = existingComment.likes.includes(userId);
+    if (alreadyLiked) { //for unlike
+      result = await Comment.findByIdAndUpdate(commentId,
+        { $pull: { likes: userId } },
+        { new: true }
+      );
+    } else {
+      result = await Comment.findByIdAndUpdate(commentId,
+        { $addToSet: { likes: userId } },
+        { new: true }
+      );
+    }
+    return successResponse(res, 200,  {
+      comment: result,
+      liked: !alreadyLiked,
+      totalLikes: result.likes.length
+    });
   } catch (error) {
     return errorResponse(res, 500, error.message);
   }
@@ -102,5 +114,5 @@ const likeComment = async (req, res) => {
 module.exports = {
   createComment,
   getAllComments,
-  likeComment,
+  likeUnlikeComment,
 };
