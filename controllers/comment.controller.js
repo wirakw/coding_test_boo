@@ -62,7 +62,10 @@ const getAllComments = async (req, res) => {
       [orderBy]: 1
     };
 
-    let comments = await Comment.find(filter).sort(sortOption).lean();
+    let comments = await Comment.find(filter)
+      .populate('userId', 'name image')
+      .sort(sortOption)
+      .lean();
     comments = comments.map(c => ({
       ...c,
       totalLikes: c.likes ? c.likes.length : 0
