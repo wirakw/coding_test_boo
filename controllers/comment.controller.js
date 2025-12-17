@@ -62,77 +62,45 @@ const getAllComments = async (req, res) => {
       [orderBy]: 1
     };
 
-    const comments = await Comment.find(filter).sort(sortOption).lean();
+    let comments = await Comment.find(filter).sort(sortOption).lean();
+    comments = comments.map(c => ({
+      ...c,
+      totalLikes: c.likes ? c.likes.length : 0
+    }));
+
     return successResponse(res, 200, { comments, count: comments.length });
   } catch (error) {
     return errorResponse(res, 500, error.message);
   }
 };
 
-// const getCommentById = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const comment = await Comment.findById(id);
+//this part for like a comment by another user
+const likeComment = async (req, res) => {
+  try {
+    const { commentId, userId } = req.body;
+    if (!commentId || !userId) {
+      return errorResponse(res, 400, 'commentId and userId are required');
+    }
+    
+    const existingComment = await Comment.findById(commentId);
+    if (!existingComment) {
+      return errorResponse(res, 404, 'Comment not found');
+    }
 
-//     if (!comment) {
-//       return errorResponse(res, 404, 'Comment not found');
-//     }
+    const result = await Comment.findByIdAndUpdate(commentId,
+      { $addToSet: { likes: userId } },
+      { new: true }
+    );
 
-//     return successResponse(res, 200, comment);
-//   } catch (error) {
-//     return errorResponse(res, 500, error.message);
-//   }
-// };
+    return successResponse(res, 200, result);
+  } catch (error) {
+    return errorResponse(res, 500, error.message);
+  }
+};
 
-// // Update a comment
-// const updateCommentById = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const { name, image } = req.body;
-
-//     const existingComment = await Comment.findById(id);
-
-//     if (!existingComment) {
-//       return errorResponse(res, 404, 'Comment not found');
-//     }
-
-//     const updateFields = {};
-//     if (name !== undefined) updateFields.name = name;
-//     if (image !== undefined) updateFields.image = image;
-
-//     const result = await Comment.findByIdAndUpdate(
-//       id,
-//       updateFields,
-//       { new: true, runValidators: true }
-//     );
-
-//     return successResponse(res, 200, result);
-//   } catch (error) {
-//     return errorResponse(res, 500, error.message);
-//   }
-// };
-
-// // Delete a comment
-// const deleteCommentById = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const existingComment = await Comment.findById(id);
-
-//     if (!existingComment) {
-//       return errorResponse(res, 404, 'Comment not found');
-//     }
-
-//     await Comment.findByIdAndDelete(id);
-//     return successResponse(res, 200, { message: 'Comment deleted successfully' });
-//   } catch (error) {
-//     return errorResponse(res, 500, error.message);
-//   }
-// };
 
 module.exports = {
   createComment,
   getAllComments,
-  // getCommentById,
-  // updateCommentById,
-  // deleteCommentById
+  likeComment,
 };

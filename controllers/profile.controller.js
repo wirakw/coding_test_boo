@@ -22,7 +22,7 @@ const createProfile = async (req, res) => {
       socionics: socionics || '',
       sloan: sloan || '',
       psyche: psyche || '',
-      image: image || ''
+      image: image || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`
     };
 
     const profile = await Profile.create(profileData);

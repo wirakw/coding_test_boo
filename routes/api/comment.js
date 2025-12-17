@@ -3,7 +3,8 @@
 const express = require('express');
 const {
   createComment,
-  getAllComments
+  getAllComments,
+  likeComment
 } = require('../../controllers/comment.controller');
 
 module.exports = function() {
@@ -11,6 +12,8 @@ module.exports = function() {
 
   router.post('/', createComment);
   router.get('/', getAllComments);
+  
+  router.post('/like', likeComment);
 
   return router;
 };

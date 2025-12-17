@@ -14,7 +14,7 @@ const createUser = async (req, res) => {
 
     const userData = {
       name,
-      image: image || ''
+      image: image || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`
     };
 
     const user = await User.create(userData);
