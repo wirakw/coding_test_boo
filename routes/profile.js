@@ -24,7 +24,6 @@ const profile = require('./api/profile');
 module.exports = function () {
 
   router.get('/', async function (req, res, next) {
-    try {
       const id = req.query.profileid;
       const profile = id 
         ? await Profile.findById(id)
@@ -35,10 +34,6 @@ module.exports = function () {
       }
 
       res.render('profile_template', { profile });
-    } catch (error) {
-      next(error);
-    }
-
   });
   return router;
 }
