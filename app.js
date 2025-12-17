@@ -3,6 +3,7 @@
 const express = require('express');
 const { connect } = require('./config/database');
 const apiRoutes = require('./routes/api');
+const errorHandler = require('./middlewares/errorHandler');
 const app = express();
 const port =  process.env.PORT || 3000;
 
@@ -23,6 +24,9 @@ connect().catch(err => {
 app.use('/', require('./routes/profile')());
 
 app.use('/api', apiRoutes());
+
+// use error handler middleware
+app.use(errorHandler);
 
 // start server
 const server = app.listen(port);
