@@ -14,11 +14,13 @@ app.use(express.urlencoded({ extended: true }));
 // set the view engine to ejs
 app.set('view engine', 'ejs');
 
-// Initialize database connection
-connect().catch(err => {
-  console.error('Failed to connect to database:', err);
-  process.exit(1);
-});
+// Initialize database connection only if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+  connect().catch(err => {
+    console.error('Failed to connect to database:', err);
+    process.exit(1);
+  });
+}
 
 // routes
 app.use('/', require('./routes/profile')());
@@ -28,6 +30,11 @@ app.use('/api', apiRoutes());
 // use error handler middleware
 app.use(errorHandler);
 
-// start server
-const server = app.listen(port);
-console.log('Express started. Listening on %s', port);
+// Export app for testing
+module.exports = app;
+
+// start server only if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+  const server = app.listen(port);
+  console.log('Express started. Listening on %s', port);
+}
